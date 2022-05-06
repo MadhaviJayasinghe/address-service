@@ -37,9 +37,9 @@ public class WalletController {
         return new ResponseEntity<Wallet>(wallet, HttpStatus.OK);
     }
 
-    @PatchMapping("/{walletAddress}/{convertFrom}/{convertTo}/{amount}")
-    public void storeFund(@PathVariable("walletAddress") String walletAddress, @PathVariable("convertFrom") String convertFrom, @PathVariable("convertTo") String convertTo, @PathVariable("amount") Number amount) {
-        walletRepository.storeFund(walletAddress, convertFrom, convertTo, amount);
+    @PostMapping("/{walletAddress}")
+    public void storeFund(@PathVariable("walletAddress") String walletAddress, @RequestBody Wallet wallet) {
+        walletRepository.storeFund(walletAddress, wallet);
     }
 
 }

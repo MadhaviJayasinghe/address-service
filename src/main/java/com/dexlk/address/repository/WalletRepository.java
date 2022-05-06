@@ -29,10 +29,6 @@ public class WalletRepository {
         mapper.save(wallet);
     }
 
-//    public Wallet getWallet(String walletId) {
-//        return mapper.load(Wallet.class, walletId);
-//    }
-
     public List<String> getWalletAddresses(String userId) {
         Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
         eav.put(":val1", new AttributeValue().withS(userId));
@@ -80,16 +76,20 @@ public class WalletRepository {
         return vo;
     }
 
-    public void storeFund (String walletAddress, String convertFrom, String covertTo, Number amount) {
+    public void storeFund (String walletAddress, Wallet walletObj) {
         Wallet wallet = getWalletByAddress(walletAddress);
-        ResponseTemplateVO fundObj = getFund(walletAddress, convertFrom, covertTo, amount);
+        if (walletObj.getId() != null) {
+            wallet.setId(walletObj.getId());
+        }
+        if (walletObj.getWalletAddress() != null) {
+            wallet.setWalletAddress(walletObj.getWalletAddress());
+        }
+        if (walletObj.getUsdBalance() != null) {
+            wallet.setUsdBalance(walletObj.getUsdBalance());
+        }
 
-        Fund fund = fundObj.getFund();
-        if (fund.getFundAmount() != null) {
-            Number usdValue = wallet.getUsdBalance().intValue() - amount.intValue();
-            Number bitcoinVale = wallet.getBitcoinBalance().intValue() + fund.getFundAmount().intValue();
-            wallet.setUsdBalance(usdValue);
-            wallet.setBitcoinBalance(bitcoinVale);
+        if (walletObj.getBitcoinBalance() != null) {
+            wallet.setBitcoinBalance(walletObj.getBitcoinBalance());
         }
         mapper.save(wallet);
     }
