@@ -22,12 +22,6 @@ public class WalletController {
         walletRepository.insertIntoDynamoDB(wallet);
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<Wallet> getWalletById(@PathVariable("id") String walletId) {
-//        Wallet wallet = walletRepository.getWallet(walletId);
-//        return new ResponseEntity<Wallet>(wallet, HttpStatus.OK);
-//    }
-
     @GetMapping("/addresses/{userId}")
     public List<String> getWallets(@PathVariable("userId") String userId) {
         List<String> walletAddresses = walletRepository.getWalletAddresses(userId);
@@ -43,8 +37,9 @@ public class WalletController {
         return new ResponseEntity<Wallet>(wallet, HttpStatus.OK);
     }
 
-    @PatchMapping("/{walletAddress}")
-    public void storeFund(@PathVariable("walletAddress") String walletAddress, @RequestBody Wallet wallet) {
-        walletRepository.storeFund(walletAddress, wallet);
+    @PatchMapping("/{walletAddress}/{convertFrom}/{convertTo}/{amount}")
+    public void storeFund(@PathVariable("walletAddress") String walletAddress, @PathVariable("convertFrom") String convertFrom, @PathVariable("convertTo") String convertTo, @PathVariable("amount") Number amount) {
+        walletRepository.storeFund(walletAddress, convertFrom, convertTo, amount);
     }
+
 }

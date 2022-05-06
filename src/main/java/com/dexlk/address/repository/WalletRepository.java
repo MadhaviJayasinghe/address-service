@@ -3,10 +3,14 @@ package com.dexlk.address.repository;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.dexlk.address.VO.Fund;
+import com.dexlk.address.VO.ResponseTemplateVO;
+import com.dexlk.address.controller.WalletController;
 import com.dexlk.address.model.Wallet;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +22,9 @@ import java.util.Map;
 public class WalletRepository {
     @Autowired
     private DynamoDBMapper mapper;
+    @Autowired
+    private RestTemplate restTemplate;
+
     public void insertIntoDynamoDB(Wallet wallet) {
         mapper.save(wallet);
     }
@@ -61,21 +68,30 @@ public class WalletRepository {
         return wallets.get(0);
     }
 
-    public void storeFund (String walletAddress, Wallet walletObj) {
-        Wallet wallet = getWalletByAddress(walletAddress);
-        if (walletObj.getId() != null) {
-            wallet.setId(walletObj.getId());
-        }
-        if (walletObj.getWalletAddress() != null) {
-            wallet.setWalletAddress(walletObj.getWalletAddress());
-        }
-        if (walletObj.getUsdBalance() != null) {
-            wallet.setUsdBalance(walletObj.getUsdBalance());
-        }
+    public ResponseTemplateVO getFund(String walletAddress, String convertFrom, String covertTo, Number amount) {
+        log.info("Inside getWalletBalance of ExchangeWalletService");
+        ResponseTemplateVO vo = new ResponseTemplateVO();
 
-        if (walletObj.getBitcoinBalance() != null) {
-            wallet.setBitcoinBalance(walletObj.getBitcoinBalance());
+        Fund fund =
+                restTemplate.getForObject("http://localhost:9002/exchangeWallet/" + walletAddress + "/" + convertFrom + "/" + covertTo + "/" + amount, Fund.class);
+
+        vo.setFund(fund);
+
+        return vo;
+    }
+
+    public void storeFund (String walletAddress, String convertFrom, String covertTo, Number amount) {
+        Wallet wallet = getWalletByAddress(walletAddress);
+        ResponseTemplateVO fundObj = getFund(walletAddress, convertFrom, covertTo, amount);
+
+        Fund fund = fundObj.getFund();
+        if (fund.getFundAmount() != null) {
+            Number usdValue = wallet.getUsdBalance().intValue() - amount.intValue();
+            Number bitcoinVale = wallet.getBitcoinBalance().intValue() + fund.getFundAmount().intValue();
+            wallet.setUsdBalance(usdValue);
+            wallet.setBitcoinBalance(bitcoinVale);
         }
         mapper.save(wallet);
     }
+
 }

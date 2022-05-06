@@ -3,17 +3,12 @@ package com.dexlk.address.model;
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 
 import java.io.Serializable;
-import java.util.Map;
-//import org.springframework.data.annotation.Id;
-//import org.springframework.data.mongodb.core.mapping.Document;
 
-//@Document(collection = "wallets")
 @DynamoDBTable(tableName = "wallets")
 
 public class Wallet implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    //    @Id
     private String id;
 
     private String walletAddress;
