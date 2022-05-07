@@ -3,14 +3,10 @@ package com.dexlk.address.repository;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.dexlk.address.VO.Fund;
-import com.dexlk.address.VO.ResponseTemplateVO;
-import com.dexlk.address.controller.WalletController;
 import com.dexlk.address.model.Wallet;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,8 +18,6 @@ import java.util.Map;
 public class WalletRepository {
     @Autowired
     private DynamoDBMapper mapper;
-    @Autowired
-    private RestTemplate restTemplate;
 
     public void insertIntoDynamoDB(Wallet wallet) {
         mapper.save(wallet);
@@ -64,18 +58,6 @@ public class WalletRepository {
         return wallets.get(0);
     }
 
-    public ResponseTemplateVO getFund(String walletAddress, String convertFrom, String covertTo, Number amount) {
-        log.info("Inside getWalletBalance of ExchangeWalletService");
-        ResponseTemplateVO vo = new ResponseTemplateVO();
-
-        Fund fund =
-                restTemplate.getForObject("http://localhost:9002/exchangeWallet/" + walletAddress + "/" + convertFrom + "/" + covertTo + "/" + amount, Fund.class);
-
-        vo.setFund(fund);
-
-        return vo;
-    }
-
     public void storeFund (String walletAddress, Wallet walletObj) {
         Wallet wallet = getWalletByAddress(walletAddress);
         if (walletObj.getId() != null) {
@@ -93,5 +75,4 @@ public class WalletRepository {
         }
         mapper.save(wallet);
     }
-
 }

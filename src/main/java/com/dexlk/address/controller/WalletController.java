@@ -1,6 +1,8 @@
 package com.dexlk.address.controller;
 
+import com.dexlk.address.VO.ValidationResponseTemplateVO;
 import com.dexlk.address.model.Wallet;
+import com.dexlk.address.repository.AuthRepository;
 import com.dexlk.address.repository.WalletRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -9,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Slf4j
@@ -16,16 +19,25 @@ import java.util.List;
 public class WalletController {
     @Autowired
     private WalletRepository walletRepository;
+    @Autowired
+    private AuthRepository authRepository;
 
     @PostMapping
     public void saveWallet(@RequestBody Wallet wallet) {
+
         walletRepository.insertIntoDynamoDB(wallet);
     }
 
     @GetMapping("/addresses/{userId}")
-    public List<String> getWallets(@PathVariable("userId") String userId) {
+    public List<String> getWallets(@PathVariable("userId") String userId, @RequestHeader Map<String, String> headers) {
+        headers.forEach((key, value) -> {
+            if (key.equals("authorization")) {
+                String token = value.substring(7);
+                ValidationResponseTemplateVO a = authRepository.validate(token);
+                log.info(String.format("Header '%s' = %s", key, token));
+            }
+        });
         List<String> walletAddresses = walletRepository.getWalletAddresses(userId);
-//        log.info("Inside saveWallet of WalletService {}", walletResponseEntity);
         return walletAddresses;
     }
 
