@@ -4,6 +4,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.dexlk.address.VO.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
@@ -15,29 +16,30 @@ public class AuthRepository {
     @Autowired
     private RestTemplate restTemplate;
 
+    @Value("${auth-url}")
+    private String url;
+
     public ValidationResponseTemplateVO validate(String token) {
-            ValidationResponseTemplateVO vo = new ValidationResponseTemplateVO();
-            String url = "http://localhost:9003/validate";
+        ValidationResponseTemplateVO vo = new ValidationResponseTemplateVO();
 
-            TokenRequest tokenRequest = new TokenRequest();
+        TokenRequest tokenRequest = new TokenRequest();
 
-            tokenRequest.setToken(token);
-            ValidationResponse validationResponse =
-                    restTemplate.postForObject(url, tokenRequest, ValidationResponse.class);
-            if (validationResponse != null) {
-                log.info("valid {}", validationResponse.getResponse());
+        tokenRequest.setToken(token);
+        ValidationResponse validationResponse =
+                restTemplate.postForObject(url, tokenRequest, ValidationResponse.class);
+        if (validationResponse != null) {
+            log.info("valid {}", validationResponse.getResponse());
 
-                if (validationResponse.getResponse().equals("true")) {
+            if (validationResponse.getResponse().equals("true")) {
 
-                    vo.setValidationResponse(validationResponse);
+                vo.setValidationResponse(validationResponse);
 
-                    return vo;
-                }
+                return vo;
             }
-            else {
-                log.info("Invalid {}", "validationResponse.getResponse()");
+        } else {
+            log.info("Invalid {}", "validationResponse.getResponse()");
 
-            }
+        }
 //        } catch (Exception e) {
 //            log.error("Error " + e.getMessage());
 //        }

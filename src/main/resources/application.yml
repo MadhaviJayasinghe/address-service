@@ -7,3 +7,5 @@ amazon:
     url: dynamodb.ap-south-1.amazonaws.com
 server:
   port: 9001
+
+auth-url: http://localhost:9003/validate
