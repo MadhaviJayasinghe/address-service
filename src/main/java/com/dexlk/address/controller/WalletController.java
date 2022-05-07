@@ -23,7 +23,15 @@ public class WalletController {
     private AuthRepository authRepository;
 
     @PostMapping
-    public void saveWallet(@RequestBody Wallet wallet) {
+    public void saveWallet(@RequestBody Wallet wallet, @RequestHeader Map<String, String> headers) {
+        headers.forEach((key, value) -> {
+            if (key.equals("authorization")) {
+                String token = value.substring(7);
+                ValidationResponseTemplateVO a = authRepository.validate(token);
+                wallet.setUserId(a.getValidationResponse().getUserId());
+                log.info(String.format("Header '%s' = %s", key, token));
+            }
+        });
 
         walletRepository.insertIntoDynamoDB(wallet);
     }
@@ -50,7 +58,15 @@ public class WalletController {
     }
 
     @PostMapping("/{walletAddress}")
-    public void storeFund(@PathVariable("walletAddress") String walletAddress, @RequestBody Wallet wallet) {
+    public void storeFund(@PathVariable("walletAddress") String walletAddress, @RequestBody Wallet wallet, @RequestHeader Map<String, String> headers) {
+        headers.forEach((key, value) -> {
+            if (key.equals("authorization")) {
+                String token = value.substring(7);
+                ValidationResponseTemplateVO a = authRepository.validate(token);
+                log.info(String.format("Header '%s' = %s", key, token));
+            }
+        });
+
         walletRepository.storeFund(walletAddress, wallet);
     }
 
