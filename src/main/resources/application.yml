@@ -6,6 +6,6 @@ amazon:
   end-point:
     url: dynamodb.ap-south-1.amazonaws.com
 server:
-  port: 9001
+  port: 80
 
-auth-url: http://localhost:9003/validate
+auth-url: ${AUTH_URL:http://localhost:9003/validate}

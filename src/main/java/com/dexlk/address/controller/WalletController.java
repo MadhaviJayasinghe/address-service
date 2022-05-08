@@ -15,7 +15,7 @@ import java.util.Map;
 
 @RestController
 @Slf4j
-@RequestMapping("/wallets")
+@RequestMapping("/")
 public class WalletController {
     @Autowired
     private WalletRepository walletRepository;

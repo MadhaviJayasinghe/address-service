@@ -1,0 +1,11 @@
+version: "3.3"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: address-service:latest
+    environment:
+      AUTH_URL: http://localhost:9003/validate
+    ports:
+      - "9001:80"
