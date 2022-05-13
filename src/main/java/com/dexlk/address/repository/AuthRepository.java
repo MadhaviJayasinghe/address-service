@@ -40,9 +40,6 @@ public class AuthRepository {
             log.info("Invalid {}", "validationResponse.getResponse()");
 
         }
-//        } catch (Exception e) {
-//            log.error("Error " + e.getMessage());
-//        }
         return null;
     }
 }

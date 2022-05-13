@@ -8,4 +8,4 @@ amazon:
 server:
   port: 80
 
-auth-url: ${AUTH_URL:http://localhost:9003/validate}
+auth-url: ${AUTH_URL:http://localhost:9003/auth/validate}

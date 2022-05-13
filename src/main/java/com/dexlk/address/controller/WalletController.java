@@ -22,7 +22,7 @@ public class WalletController {
     @Autowired
     private AuthRepository authRepository;
 
-    @PostMapping
+    @PostMapping("/wallets")
     public void saveWallet(@RequestBody Wallet wallet, @RequestHeader Map<String, String> headers) {
         headers.forEach((key, value) -> {
             if (key.equals("authorization")) {
@@ -36,7 +36,7 @@ public class WalletController {
         walletRepository.insertIntoDynamoDB(wallet);
     }
 
-    @GetMapping("/addresses/{userId}")
+    @GetMapping("/wallets/addresses/{userId}")
     public List<String> getWallets(@PathVariable("userId") String userId, @RequestHeader Map<String, String> headers) {
         headers.forEach((key, value) -> {
             if (key.equals("authorization")) {
@@ -49,7 +49,7 @@ public class WalletController {
         return walletAddresses;
     }
 
-    @GetMapping("/address/{walletAddress}")
+    @GetMapping("/wallets/address/{walletAddress}")
     public ResponseEntity<Wallet> getWalletByWalletAddress(@PathVariable("walletAddress") String walletAddress) {
         Wallet wallet = walletRepository.getWalletByAddress(walletAddress);
                 log.info("Inside findWalletById method of WalletController");
@@ -57,8 +57,9 @@ public class WalletController {
         return new ResponseEntity<Wallet>(wallet, HttpStatus.OK);
     }
 
-    @PostMapping("/{walletAddress}")
+    @PostMapping("/wallets/{walletAddress}")
     public void storeFund(@PathVariable("walletAddress") String walletAddress, @RequestBody Wallet wallet, @RequestHeader Map<String, String> headers) {
+//        headers.get(authorization)
         headers.forEach((key, value) -> {
             if (key.equals("authorization")) {
                 String token = value.substring(7);
